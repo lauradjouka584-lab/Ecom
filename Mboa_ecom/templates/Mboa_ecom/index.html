@@ -1,0 +1,136 @@
+{% extends 'Mboa_ecom/base.html' %}
+
+{% block content %}
+    <div class="row my-2">
+        <div class="col-md-12">
+            <form action="" class="card card-sm">
+                <div class="card-body row no-gutters align-item-center">
+                    <div class="col">
+                        <input type="search" placeholder="Rechercher un produit, une marque..." name="item-name" class="form-control form-control-borderless">
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-success">Recherche</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row my-3">
+        {% for product in product_object%}
+        <div class="col-md-3 mb-4">
+            <div class="card h-100">
+                <img src="{{ product.image}}" alt="{{product.name}}" class="card-img-top">
+                <div class="card-body d-flex flex-column"> 
+                    <!-- empile les enfants verticalement et permet à mt-auto de fonctionner -->
+                    <div id="p{{product.id}}" class="card-title">{{product.name}}</div>
+                    <div id="price{{product.id}}" style="color: orangered;" class="card-text">{{product.price}} <h6 > XAF </h6></div>
+                    <div class="mt-auto">
+                    <!-- auto pousse ce bloc tout en bas de l'espace flex disponible -->
+                        <a href="{% url 'product_detail' product.id %}" class="btn btn-warning">Voir</a>
+                        <button id="{{product.id}}" class="btn add btn-success">Ajouter</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {%  endfor %}
+    </div>
+    <div class="pagination justify-content-center my-4">
+        <nav>
+            <ul class="pagination">
+                {% if product_object.has_previous %}
+                    <li class="page-item">
+                    <a class="page-link" href="?page={{ product_object.previous_page_number }}">Précédent</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                    <span class="page-link">Précédent</span>
+                    </li>
+                {% endif %}
+                <!-- Indicateur de page actuelle -->
+                <li class="page-item active">
+                    <span class="page-link">
+                    Page {{ product_object.number }} sur {{ product_object.paginator.num_pages }}
+                    </span>
+                </li>
+                <!-- Bouton Suivant -->
+                {% if product_object.has_next %}
+                    <li class="page-item">
+                    <a class="page-link" href="?page={{ product_object.next_page_number }}">Suivant</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                    <span class="page-link">Suivant</span>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+{% endblock content %}
+
+{% block js %}
+    <script type="text/javascript">
+        // 1. Initialisation du panier
+        var panier = {};
+        if (localStorage.getItem('panier') !== null) {
+            panier = JSON.parse(localStorage.getItem('panier'));
+        }
+
+        // Mise à jour initiale du texte du panier et du popover au chargement
+        MajPanier(panier);
+
+        // 2. Écouteur sur le bouton Ajouter
+        $(document).on('click', '.add', function() {
+            var item_id = this.id.toString();
+
+            if (panier[item_id] !== undefined) {
+                // On augmente juste la quantité
+                panier[item_id][0] = panier[item_id][0] + 1;
+            } else {
+                var quantite = 1;
+                var nom = document.getElementById('p' + item_id).innerText.trim();
+                // Nettoyage du prix : extrait uniquement les chiffres
+                var rawPrice = document.getElementById('price' + item_id).innerText;
+                var prix = parseFloat(rawPrice.replace(/[^0-9.]/g, ''));
+                panier[item_id] = [quantite, nom, prix]; 
+            }
+
+            // Sauvegarde et mise à jour
+            localStorage.setItem('panier', JSON.stringify(panier));
+            MajPanier(panier);
+        });
+
+        // 3. Écouteur pour vider le panier 
+        $(document).on('click', '#vider-panier', function() {
+            localStorage.removeItem('panier');
+            panier = {};
+            MajPanier(panier);
+        });
+
+        // 4. Fonction globale de mise à jour navbar + popover
+        function MajPanier(panier) {
+            var totalArticles = 0;
+            var panierList = "<h6>Voici la liste de vos produits</h6>";
+            var index = 1;
+
+            for (var x in panier) {
+                totalArticles += panier[x][0]; // Somme des quantités
+                panierList += index + ". " + panier[x][1] + " - Quantité: " + panier[x][0] + "<br>";
+                index += 1;
+            }
+
+            panierList += "<div class='d-flex gap-2 mt-2'>";
+            panierList += "<a href='{% url 'commander' %}' class='btn btn-warning w-50'>Commander</a>";
+            panierList += "<button id='vider-panier' class='btn btn-outline-danger text-white bg-danger w-50'>Vider</button>";
+            panierList += "</div>";
+
+            // Mise à jour de la navbar
+            if (document.getElementById("panier")) {
+                document.getElementById("panier").innerHTML = "Panier (" + Object.keys(panier).length + ")";
+                document.getElementById("panier").setAttribute('data-content', panierList);
+            }
+
+            // Rechargement du Popover Bootstrap
+            $('[data-toggle="popover"]').popover('dispose').popover();
+        }
+    </script>
+{% endblock js %}

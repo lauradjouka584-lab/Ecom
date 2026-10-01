@@ -1,0 +1,81 @@
+{% extends 'Mboa_ecom/base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+        <div class="card-body p-4 p-md-5">
+            <div class="row align-items-center g-4">
+                
+                <!-- Image -->
+                <div class="col-md-6 text-center">
+                    <div class="bg-light p-3 rounded-3">
+                        <img src="{{ data.image }}" alt="{{ data.name }}" class="img-fluid rounded-3 style-product-img" style="max-height: 400px; object-fit: contain;">
+                    </div>
+                </div>
+
+                <!-- Détails -->
+                <div class="col-md-6">
+                    <h2 id="product-name" class="fw-bold text-dark text-capitalize mb-3">{{ data.name }}</h2>
+
+                    <h3 id="product-price" class="text-danger fw-bold mb-4 display-6">
+                        {{ data.price }} <small class="fs-5 text-muted">XAF</small>
+                    </h3>
+
+                    <p class="text-secondary lead fs-6 mb-4">
+                        {{ data.description }}
+                    </p>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                        <button id="{{ data.id }}" class="btn add btn-success btn-lg px-4 me-md-2 fw-semibold shadow-sm">
+                            <i class="bi bi-cart-plus me-2"></i> Ajouter au panier
+                        </button>
+                        <a href="/" class="btn btn-outline-secondary btn-lg px-4">
+                            Retour
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block js %}
+    <script type="text/javascript">
+        var panier = {};
+        if (localStorage.getItem('panier') !== null) {
+            panier = JSON.parse(localStorage.getItem('panier'));
+        }
+
+        // Mise à jour de la Navbar au chargement
+        if (document.getElementById("panier")) {
+            document.getElementById("panier").innerHTML = "Panier (" + Object.keys(panier).length + ")";
+        }
+
+        // Clic sur Ajouter au panier
+        $(document).on('click', '.add', function() {
+            var item_id = this.id.toString();
+
+            if (panier[item_id] !== undefined) {
+                panier[item_id][0] = panier[item_id][0] + 1;
+            } else {
+                var quantite = 1;
+                // Lecture directe via les IDs fixes 'product-name' et 'product-price'
+                var nom = document.getElementById('product-name').innerText.trim();
+                var rawPriceText = document.getElementById('product-price').innerText;
+                var prix = parseFloat(rawPriceText.replace(/[^0-9.]/g, ''));
+
+                panier[item_id] = [quantite, nom, prix];
+            }
+
+            // Sauvegarde
+            localStorage.setItem('panier', JSON.stringify(panier));
+
+            // Mise à jour du compteur dans la Navbar
+            if (document.getElementById("panier")) {
+                document.getElementById("panier").innerHTML = "Panier (" + Object.keys(panier).length + ")";
+            }
+        });
+    </script>
+{% endblock js %}

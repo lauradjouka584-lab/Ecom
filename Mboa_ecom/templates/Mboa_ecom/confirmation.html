@@ -1,0 +1,51 @@
+{% extends 'Mboa_ecom/base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card border-0 shadow-lg rounded-lg text-center p-4 p-md-5">
+                <div class="mb-4">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-success text-white rounded-circle shadow" style="width: 80px; height: 80px;">
+                        <i class="bi bi-check-lg display-4"></i>
+                    </div>
+                </div>
+                <!-- Titre et Message personnalisé -->
+                <h2 class="fw-bold text-dark mb-2">Commande confirmée !</h2>
+                <p class="text-muted fs-5 mb-4">
+                    Merci pour votre achat, <strong class="text-success">{{ name }}</strong> !
+                </p>
+
+                <hr class="my-4">
+
+                <!-- Détails d'information -->
+                <div class="bg-light p-3 rounded-3 mb-4 text-start">
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="bi bi-info-circle text-primary me-2 fs-5"></i>
+                        <span class="text-secondary small">Votre commande a été enregistrée avec succès.</span>
+                    </div>
+                </div>
+
+                <!-- Boutons d'action -->
+                <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                    <a href="{% url 'home' %}" class="btn btn-warning btn-lg px-4 gap-3 fw-bold text-white me-sm-2 mb-2 mb-sm-0">
+                        <i class="bi bi-house-door me-2"></i>Retour à l'accueil
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block js %}
+    <script type="text/javascript">
+        // Vider le panier dans le navigateur une fois la commande validée
+        localStorage.removeItem('panier');
+        
+        // Mettre à jour l'affichage du panier dans la Navbar à 0
+        if (document.getElementById("panier")) {
+            document.getElementById("panier").innerHTML = '<i class="bi bi-cart-plus me-2"></i>Panier (0)';
+        }
+    </script>
+{% endblock js %}
