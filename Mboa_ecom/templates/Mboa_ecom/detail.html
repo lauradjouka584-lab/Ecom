@@ -9,7 +9,9 @@
                 <!-- Image -->
                 <div class="col-md-6 text-center">
                     <div class="bg-light p-3 rounded-3">
-                        <img src="{{ data.image }}" alt="{{ data.name }}" class="img-fluid rounded-3 style-product-img" style="max-height: 400px; object-fit: contain;">
+                        {% if data.image %}
+                            <img src="{{ data.image.url }}" alt="{{ data.name }}" class="img-fluid rounded-3 style-product-img" style="max-height: 400px; object-fit: contain;">
+                        {% endif %}
                     </div>
                 </div>
 
