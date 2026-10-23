@@ -37,8 +37,7 @@ DEBUG = os.environ.get("DEBUG", "True") == "True"
 # ALLOWED_HOSTS : liste des adresses autorisées à ouvrir ton site.
 # En local : 127.0.0.1 et localhost. Sur Heroku : nom-de-ton-app.herokuapp.com.
 # .split(",") transforme "a,b" en liste ["a", "b"].
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
-
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "127.0.0.1,localhost,.vercel.app").split(",")
 
 # ==========================================================
 #  APPLICATIONS INSTALLÉES
@@ -115,7 +114,7 @@ else:
             'ENGINE': 'django.db.backends.postgresql',   # type de base : PostgreSQL
             'NAME': 'ecom_db',                           # nom de la base
             'USER': 'postgres',                          # utilisateur
-            'PASSWORD': os.environ.get("DB_PASSWORD", "sarl106"),  # mot de passe
+            'PASSWORD': os.environ.get("DB_PASSWORD", ""),            
             'HOST': 'localhost',                         
             'PORT': '5432',                              # port standard de PostgreSQL
         }
@@ -191,10 +190,7 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Liste des sites autorisés à envoyer des formulaires (protection CSRF).
 # On crée "https://nom-de-ton-app.herokuapp.com" à partir de ALLOWED_HOSTS,
-# en ignorant 127.0.0.1 et localhost. Sans ça : erreur CSRF sur l'admin et la commande.
-CSRF_TRUSTED_ORIGINS = [
-    "https://" + h for h in ALLOWED_HOSTS if h not in ("127.0.0.1", "localhost")
-]
+CSRF_TRUSTED_ORIGINS = ["https://*.vercel.app"]
 
 
 # ==========================================================

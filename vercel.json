@@ -1,0 +1,8 @@
+{
+  "builds": [
+    { "src": "ecompro/wsgi.py", "use": "@vercel/python" }
+  ],
+  "routes": [
+    { "src": "/(.*)", "dest": "ecompro/wsgi.py" }
+  ]
+}
